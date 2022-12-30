@@ -45,4 +45,4 @@ app.get('/', (req, res) => {
 
 module.exports = app;
 
-// require('./db.js');
+require('./db.js');

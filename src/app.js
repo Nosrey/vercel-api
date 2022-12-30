@@ -38,12 +38,12 @@
 
 const express = require('express');
 const app = express();
-// const { Sequelize } = require('sequelize');
+const { Sequelize } = require('sequelize');
 
-// const sequelize = new Sequelize(`postgres://pywdkbxe:HB2qXYt_kwRdn_3O69o9vsN5FOIr6NZU@berry.db.elephantsql.com/pywdkbxe`, {
-//   logging: false, // set to console.log to see the raw SQL queries
-//   native: false, // lets Sequelize know we can use pg-native for ~30% more speed
-// });
+const sequelize = new Sequelize(`postgres://pywdkbxe:HB2qXYt_kwRdn_3O69o9vsN5FOIr6NZU@berry.db.elephantsql.com/pywdkbxe`, {
+  logging: false, // set to console.log to see the raw SQL queries
+  native: false, // lets Sequelize know we can use pg-native for ~30% more speed
+});
 
 app.get('/', (req, res) => {
     res.send('Hola Mundo');
@@ -51,6 +51,6 @@ app.get('/', (req, res) => {
 
 module.exports = {
     // ...sequelize.models, // para poder importar los modelos así: const { Product, User } = require('./db.js');
-    // conn: sequelize,     // para importart la conexión { conn } = require('./db.js');
+    conn: sequelize,     // para importart la conexión { conn } = require('./db.js');
     app: app,
 };

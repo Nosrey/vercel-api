@@ -35,7 +35,7 @@
 //     res.status(status).send(message);
 // });
 
-module.exports = server;
+// module.exports = server;
 
 const express = require('express');
 const app = express();

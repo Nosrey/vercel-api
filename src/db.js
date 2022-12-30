@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const { Sequelize } = require('sequelize');
+const pg = require('pg');
 const fs = require('fs');
 const path = require('path');
 // const {
@@ -9,6 +10,7 @@ const path = require('path');
 
 // const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/postgres`, {
 const sequelize = new Sequelize(`postgres://pywdkbxe:HB2qXYt_kwRdn_3O69o9vsN5FOIr6NZU@berry.db.elephantsql.com/pywdkbxe`, {
+  dialectModule: pg,
   logging: false, // set to console.log to see the raw SQL queries
   native: false, // lets Sequelize know we can use pg-native for ~30% more speed
 });

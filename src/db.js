@@ -9,7 +9,7 @@ const path = require('path');
 // } = process.env;
 
 // const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/postgres`, {
-const sequelize = new Sequelize(`postgres://pywdkbxe:HB2qXYt_kwRdn_3O69o9vsN5FOIr6NZU@berry.db.elephantsql.com/pywdkbxe`, {
+const sequelize = new Sequelize(`postgres://xfqoymvc:ozZE6Yv-iVC15t8tfCqMNCMgrPBVb41M@mahmud.db.elephantsql.com/xfqoymvc`, {
   dialectModule: pg,
   logging: false, // set to console.log to see the raw SQL queries
   native: false, // lets Sequelize know we can use pg-native for ~30% more speed

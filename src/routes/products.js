@@ -12,35 +12,6 @@ router.get('/', async (req, res) => {
   
         // guardo una lista de todos los elementos de Product incluyendo los elementos de Category asociados a el mismo
         let productos = await Product.findAll({ include: Category });
-        // guardo una lista de todos los elementos de Category
-        let categorias = await Category.findAll();
-        // creo un array vacio para guardar los productos con sus categorias
-        let productosConCategorias = [];
-        // recorro la lista de productos
-        productos.map(producto => {
-            // creo un objeto vacio para guardar el producto y sus categorias
-            let productoConCategorias = {};
-            // guardo el producto en el objeto
-            productoConCategorias.producto = producto;
-            // creo un array vacio para guardar las categorias
-            let categoriasDelProducto = [];
-            // recorro la lista de categorias
-            categorias.map(categoria => {
-                // recorro la lista de categorias del producto
-                producto.categories.map(categoriaDelProducto => {
-                    // si la categoria del producto es igual a la categoria del array de categorias
-                    if (categoriaDelProducto.id === categoria.id) {
-                        // guardo la categoria en el array de categorias del producto
-                        categoriasDelProducto.push(categoria);
-                    }
-                })
-            })
-            // guardo el array de categorias en el objeto
-            productoConCategorias.categorias = categoriasDelProducto;
-            // guardo el objeto en el array de productos con sus categorias
-            productosConCategorias.push(productoConCategorias);
-        }
-        )
         return res.json(productos)
     }
     catch (error) {

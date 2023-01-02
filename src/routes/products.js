@@ -9,7 +9,7 @@ require('dotenv').config();
 router.get('/', async (req, res) => {
     try {
         // let productos = await Product.findAll({ include: Category });
-  
+
         // guardo una lista de todos los elementos de Product incluyendo los elementos de Category asociados a el mismo
         let productos = await Product.findAll({ include: Category });
         return res.json(productos)
@@ -50,14 +50,23 @@ router.post('/', async (req, res) => {
             let existencia = await Product.findAll({ where: { name: objeto.name.toLowerCase() } })
             if (!existencia.length) {
                 let respuesta = await Product.create(objeto)
-                // para crear las categorias del producto
+
+                // si la variable categoryNames no es un array vacio entonces deben eliminarse las categorias actuales del producto y agregarse las nuevas, si las nuevas ya existen entonces utilizar esa categoria, de lo contrario crearla dentro del modelo categories y luego agregarla al producto
                 if (categoryNames.length) {
+                    // agregamos las nuevas categorias
                     categoryNames.map(async category => {
                         category = category.toUpperCase()
                         let categoryEl = await Category.findOne({ where: { name: category } })
-                        respuesta.addCategory(categoryEl, { through: 'Product_Category' })
+                        if (categoryEl) {
+                            objeto.addCategory(categoryEl, { through: 'Product_Category' })
+                        } else {
+                            let newCategory = await Category.create({ name: category })
+                            objeto.addCategory(newCategory, { through: 'Product_Category' })
+                        }
                     })
                 }
+
+
                 // enviamos la respuesta
                 return res.json(respuesta)
             } else {

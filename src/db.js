@@ -8,7 +8,7 @@ const path = require('path');
 //   DB_USER, DB_PASSWORD, DB_HOST,
 // } = process.env;
 
-// const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}/postgres`, {
+// const sequelize = new Sequelize(`postgres://postgres:y0911985@localhost/postgres`, {
 const sequelize = new Sequelize(`postgres://xfqoymvc:ozZE6Yv-iVC15t8tfCqMNCMgrPBVb41M@mahmud.db.elephantsql.com/xfqoymvc`, {
   dialectModule: pg,
   logging: false, // set to console.log to see the raw SQL queries

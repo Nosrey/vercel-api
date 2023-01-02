@@ -84,14 +84,22 @@ router.put('/:id', async (req, res) => {
         if (priceBuy) producto.priceBuy = priceBuy
         if (avaible) producto.avaible = avaible
 
+        // si la variable categoryNames no es un array vacio entonces deben eliminarse las categorias actuales del producto y agregarse las nuevas, si las nuevas ya existen entonces utilizar esa categoria, de lo contrario crearla dentro del modelo categories y luego agregarla al producto
         if (categoryNames.length) {
+            // eliminamos las categorias actuales del producto
             producto.Categories.map(async p => {
-                  await producto.removeCategories(p);
+                await producto.removeCategories(p);
             })
+            // agregamos las nuevas categorias
             categoryNames.map(async category => {
                 category = category.toUpperCase()
                 let categoryEl = await Category.findOne({ where: { name: category } })
-                producto.addCategory(categoryEl, { through: 'Product_Category' })
+                if (categoryEl) {
+                    producto.addCategory(categoryEl, { through: 'Product_Category' })
+                } else {
+                    let newCategory = await Category.create({ name: category })
+                    producto.addCategory(newCategory, { through: 'Product_Category' })
+                }
             })
         }
 

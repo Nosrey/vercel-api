@@ -39,7 +39,12 @@ module.exports = (sequelize) => {
     avaible: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-    }
+    },
+    // agrego categoryNames que sera igual que name
+    categoryNames: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
   });
 };
 

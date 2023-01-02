@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const router = Router();
-const { Product, Category } = require('../db')
+const { Product } = require('../db')
 require('dotenv').config();
 
 
@@ -8,10 +8,8 @@ require('dotenv').config();
 // rutas get
 router.get('/', async (req, res) => {
     try {
-        // let productos = await Product.findAll({ include: Category });
-
-        // guardo una lista de todos los elementos de Product incluyendo los elementos de Category asociados a el mismo
-        let productos = await Product.findAll({ include: Category });
+        
+        let productos = await Product.findAll();
         return res.json(productos)
     }
     catch (error) {
@@ -22,7 +20,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         let { id } = req.params
-        let productos = await Product.findAll({ where: { id: id }, include: Category });
+        let productos = await Product.findAll({ where: { id } });
         return res.json(productos)
     }
     catch (error) {
@@ -42,31 +40,16 @@ router.post('/', async (req, res) => {
                 stockDeposito,
                 price,
                 avaible,
-                priceBuy
+                priceBuy,
+                categoryNames
             }
             // establecemos la imagen
             if (!objeto.imagen.length) objeto.imagen = "https://media.istockphoto.com/id/1320642367/vector/image-unavailable-icon.jpg?s=170667a&w=0&k=20&c=f3NHgpLXNEkXvbdF1CDiK4aChLtcfTrU3lnicaKsUbk="
             // revisamos si existe
             let existencia = await Product.findAll({ where: { name: objeto.name.toLowerCase() } })
             if (!existencia.length) {
-                let respuesta = await Product.create(objeto)
-
-                // si la variable categoryNames no es un array vacio entonces deben eliminarse las categorias actuales del producto y agregarse las nuevas, si las nuevas ya existen entonces utilizar esa categoria, de lo contrario crearla dentro del modelo categories y luego agregarla al producto
-                if (categoryNames.length) {
-                    // agregamos las nuevas categorias
-                    categoryNames.map(async category => {
-                        category = category.toUpperCase()
-                        let categoryEl = await Category.findOne({ where: { name: category } })
-                        if (categoryEl) {
-                            objeto.addCategory(categoryEl, { through: 'Product_Category' })
-                        } else {
-                            let newCategory = await Category.create({ name: category })
-                            objeto.addCategory(newCategory, { through: 'Product_Category' })
-                        }
-                    })
-                }
-
-
+                let respuesta = await Product.create(objeto) // creamos el producto
+                
                 // enviamos la respuesta
                 return res.json(respuesta)
             } else {
@@ -87,7 +70,7 @@ router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames } = req.body
-        const producto = await Product.findByPk(id, { include: Category })
+        let producto = await Product.findByPk(id)
         if (name) producto.name = name
         if (imagen) producto.imagen = imagen
         if (stock !== null) producto.stock = stock
@@ -95,25 +78,7 @@ router.put('/:id', async (req, res) => {
         if (price) producto.price = price
         if (priceBuy) producto.priceBuy = priceBuy
         if (avaible) producto.avaible = avaible
-
-        // si la variable categoryNames no es un array vacio entonces deben eliminarse las categorias actuales del producto y agregarse las nuevas, si las nuevas ya existen entonces utilizar esa categoria, de lo contrario crearla dentro del modelo categories y luego agregarla al producto
-        if (categoryNames.length) {
-            // eliminamos las categorias actuales del producto
-            producto.Categories.map(async p => {
-                await producto.removeCategories(p);
-            })
-            // agregamos las nuevas categorias
-            categoryNames.map(async category => {
-                category = category.toUpperCase()
-                let categoryEl = await Category.findOne({ where: { name: category } })
-                if (categoryEl) {
-                    producto.addCategory(categoryEl, { through: 'Product_Category' })
-                } else {
-                    let newCategory = await Category.create({ name: category })
-                    producto.addCategory(newCategory, { through: 'Product_Category' })
-                }
-            })
-        }
+        if (categoryNames) producto.categoryNames = categoryNames
 
         await producto.save();
         res.json(producto);

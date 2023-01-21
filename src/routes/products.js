@@ -8,7 +8,7 @@ require('dotenv').config();
 // rutas get
 router.get('/', async (req, res) => {
     try {
-        
+
         let productos = await Product.findAll();
         return res.json(productos)
     }
@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
             let existencia = await Product.findAll({ where: { name: objeto.name.toLowerCase() } })
             if (!existencia.length) {
                 let respuesta = await Product.create(objeto) // creamos el producto
-                
+
                 // enviamos la respuesta
                 return res.json(respuesta)
             } else {
@@ -82,6 +82,43 @@ router.put('/:id', async (req, res) => {
 
         await producto.save();
         res.json(producto);
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+})
+
+// creo una ruta put que funcione igual a la ya existente pero en lugar de recibir una id recibira un array de id's y aplicara las modificaciones a cada uno de los productos con esas id, ademas las propiedades que deben ser modificadas vendran en un array llamado cambios en el cual habran objetos con los datos para cada producto
+router.put('/array', async (req, res) => {
+    try {
+        let { ids, cambios } = req.body
+        if (ids && cambios) {
+            if (ids.length === cambios.length) {
+                let producto = await Product.findAll()
+                for (let i = 0; i < ids.length; i++) {
+                    let id = ids[i]
+                    let cambio = cambios[i]
+                    // obtengo el producto que tiene la id de turno y lo guardo en una variable
+                    let productoActual = producto.find(el => el.id === id)
+                    // edito el producto dentro de la variable producto usando su id
+                    productoActual.name = cambio.name
+                    productoActual.imagen = cambio.imagen
+                    productoActual.stock = cambio.stock
+                    productoActual.stockDeposito = cambio.stockDeposito
+                    productoActual.price = cambio.price
+                    productoActual.priceBuy = cambio.priceBuy
+                    productoActual.avaible = cambio.avaible
+                    productoActual.categoryNames = cambio.categoryNames
+                    // reemplazo el producto con la id elegida con lo que ahora tengo en productoActual re escribiendo el array
+                    producto = producto.map(el => el.id === id ? productoActal : el)
+                }
+                // guardo los cambios en producto
+                await Promise.all(producto.map(async el => await el.save()))
+                res.json(producto)
+            } else {
+                throw new Error('The arrays must have the same length')
+            }
+        }
     }
     catch (error) {
         return res.status(500).json({ message: error.message })

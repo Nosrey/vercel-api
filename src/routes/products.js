@@ -66,28 +66,6 @@ router.post('/', async (req, res) => {
 
 // rutas put
 
-router.put('/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames } = req.body
-        let producto = await Product.findByPk(id)
-        if (name) producto.name = name
-        if (imagen) producto.imagen = imagen
-        if (stock !== null) producto.stock = stock
-        if (stockDeposito !== null) producto.stockDeposito = stockDeposito
-        if (price) producto.price = price
-        if (priceBuy) producto.priceBuy = priceBuy
-        if (avaible) producto.avaible = avaible
-        if (categoryNames) producto.categoryNames = categoryNames
-
-        await producto.save();
-        res.json(producto);
-    }
-    catch (error) {
-        return res.status(500).json({ message: error.message })
-    }
-})
-
 // creo una ruta put que funcione igual a la ya existente pero en lugar de recibir una id recibira un array de id's y aplicara las modificaciones a cada uno de los productos con esas id, ademas las propiedades que deben ser modificadas vendran en un array llamado cambios en el cual habran objetos con los datos para cada producto
 router.put('/array', async (req, res) => {
     try {
@@ -99,7 +77,7 @@ router.put('/array', async (req, res) => {
                     let id = ids[i]
                     let cambio = cambios[i]
                     // obtengo el producto que tiene la id de turno y lo guardo en una variable
-                    let productoActual = producto.find(el => el.id === Number(id))
+                    let productoActual = await producto.find(el => el.id == id)
                     // edito el producto dentro de la variable producto usando su id
                     productoActual.name = cambio.name
                     productoActual.imagen = cambio.imagen
@@ -119,6 +97,29 @@ router.put('/array', async (req, res) => {
                 throw new Error('The arrays must have the same length')
             }
         }
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+})
+
+
+router.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames } = req.body
+        let producto = await Product.findByPk(id)
+        if (name) producto.name = name
+        if (imagen) producto.imagen = imagen
+        if (stock !== null) producto.stock = stock
+        if (stockDeposito !== null) producto.stockDeposito = stockDeposito
+        if (price) producto.price = price
+        if (priceBuy) producto.priceBuy = priceBuy
+        if (avaible) producto.avaible = avaible
+        if (categoryNames) producto.categoryNames = categoryNames
+
+        await producto.save();
+        res.json(producto);
     }
     catch (error) {
         return res.status(500).json({ message: error.message })

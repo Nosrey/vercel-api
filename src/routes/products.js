@@ -99,7 +99,7 @@ router.put('/array', async (req, res) => {
                     let id = ids[i]
                     let cambio = cambios[i]
                     // obtengo el producto que tiene la id de turno y lo guardo en una variable
-                    let productoActual = producto.find(el => el.id === id)
+                    let productoActual = producto.find(el => el.id === Number(id))
                     // edito el producto dentro de la variable producto usando su id
                     productoActual.name = cambio.name
                     productoActual.imagen = cambio.imagen
@@ -110,7 +110,7 @@ router.put('/array', async (req, res) => {
                     productoActual.avaible = cambio.avaible
                     productoActual.categoryNames = cambio.categoryNames
                     // reemplazo el producto con la id elegida con lo que ahora tengo en productoActual re escribiendo el array
-                    producto = producto.map(el => el.id === id ? productoActal : el)
+                    producto = producto.map(el => el.id === Number(id) ? productoActual : el)
                 }
                 // guardo los cambios en producto
                 await Promise.all(producto.map(async el => await el.save()))

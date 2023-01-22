@@ -103,7 +103,7 @@ router.put('/array', async (req, res) => {
                     // edito el producto dentro de la variable producto usando su id
                     productoActual.name = cambio.name
                     productoActual.imagen = cambio.imagen
-                    productoActual.stock = cambio.stock
+                    productoActual.stock = Number(cambio.stock)
                     productoActual.stockDeposito = cambio.stockDeposito
                     productoActual.price = cambio.price
                     productoActual.priceBuy = cambio.priceBuy

@@ -64,6 +64,49 @@ router.post('/', async (req, res) => {
     }
 })
 
+// creo una ruta /list donde hare post igual que arriba pero de varios productos
+router.post('/list', async (req, res) => {
+    try {
+        let { productos } = req.body
+        if (productos) {
+            let respuesta = await Promise.all(productos.map(async el => {
+                let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames } = el  // obtenemos los valores
+                if (name && (stock !== null) && (stockDeposito !== null) && price && priceBuy && (avaible !== null) && categoryNames) { // verificamos
+                    let objeto = {
+                        name,
+                        imagen,
+                        stock,
+                        stockDeposito,
+                        price,
+                        avaible,
+                        priceBuy,
+                        categoryNames
+                    }
+                    // establecemos la imagen
+                    if (!objeto.imagen.length) objeto.imagen = "https://media.istockphoto.com/id/1320642367/vector/image-unavailable-icon.jpg?s=170667a&w=0&k=20&c=f3NHgpLXNEkXvbdF1CDiK4aChLtcfTrU3lnicaKsUbk="
+                    // revisamos si existe
+                    let existencia = await Product.findAll({ where: { name: objeto.name.toLowerCase() } })
+                    if (!existencia.length) {
+                        let respuesta = await Product.create(objeto) // creamos el producto
+                        return respuesta
+                    } else {
+                        throw new Error('That product already exist')
+                    }
+                } else {
+                    throw new Error('The info provided is not enough');
+                }
+            }))
+            // enviamos la respuesta
+            return res.json(respuesta)
+        } else {
+            throw new Error('The info provided is not enough');
+        }
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+})
+
 // rutas put
 
 // creo una ruta put que funcione igual a la ya existente pero en lugar de recibir una id recibira un array de id's y aplicara las modificaciones a cada uno de los productos con esas id, ademas las propiedades que deben ser modificadas vendran en un array llamado cambios en el cual habran objetos con los datos para cada producto

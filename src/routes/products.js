@@ -32,7 +32,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
         let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames } = req.body  // obtenemos los valores
-        if (name && (stock !== null) && (stockDeposito !== null) && price && priceBuy && (avaible !== null) && categoryNames) { // verificamos
+        if (name && (stock !== null) && (stockDeposito !== null) && price && priceBuy && (avaible !== null)) { // verificamos
             let objeto = {
                 name,
                 imagen,
@@ -41,7 +41,8 @@ router.post('/', async (req, res) => {
                 price,
                 avaible,
                 priceBuy,
-                categoryNames
+                // agrego categoryNames si esta unicamente
+                categoryNames: categoryNames ? categoryNames : ''
             }
             // establecemos la imagen
             if (!objeto.imagen.length) objeto.imagen = "https://media.istockphoto.com/id/1320642367/vector/image-unavailable-icon.jpg?s=170667a&w=0&k=20&c=f3NHgpLXNEkXvbdF1CDiK4aChLtcfTrU3lnicaKsUbk="

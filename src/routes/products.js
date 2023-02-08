@@ -108,6 +108,66 @@ router.post('/list', async (req, res) => {
     }
 })
 
+// creo una ruta post para postear un array que tiene un grupo grande de arrays con los datos de cada producto, la estructura del array es la siguiente "[Clave,Unidad,Nombre,Cantidad,Costo,Precio,Cantidad Mínima,Precios Adicionales,Información Adicional,Categoría,Costo Promedio,]" donde array[2] equivale a "name", array[3] equivale a "stockDeposito", array[4] equivale a "priceBuy", array[5] equivale a "price" y array[9] equivale a "categoryNames", adicionalmente la propiedad "imagen" se establecera en una imagen por defecto que es "https://media.istockphoto.com/id/1320642367/vector/image-unavailable-icon.jpg?s=170667a&w=0&k=20&c=f3NHgpLXNEkXvbdF1CDiK4aChLtcfTrU3lnicaKsUbk=" y por ultimo se recibira un segundo array con la misma estructura donde si el nombre coincide exactamente a algun elemento del primer array entonces se tomara el valor de "Cantidad" y se establecera en la propiedad "stock" de ese producto
+router.post('/miNegocio', async (req, res) => {
+    try {
+        let { productos, productosStock } = req.body
+        if (productos && productosStock) {
+            let respuesta = await Promise.all(productos.map(async el => {
+                let name = el[2]
+                let stockDeposito = el[3]
+                // reviso si en productosStock existe un producto con el mismo nombre y si es asi entonces a la variable stock le doy el valor de array[3] de ese producto, si no existe la coincidencia entonces stock sera igual a 0
+                let stock = productosStock.find(el => el[2] === name) ? productosStock.find(el => el[2] === name)[3] : 0
+                let priceBuy = el[4]
+                let price = el[5]
+                let categoryNames = el[9]
+                let imagen = "https://media.istockphoto.com/id/1320642367/vector/image-unavailable-icon.jpg?s=170667a&w=0&k=20&c=f3NHgpLXNEkXvbdF1CDiK4aChLtcfTrU3lnicaKsUbk="
+                avaible = true;
+
+                // reviso si stockDeposito, stock, priceBuy o price llevado a Number() es negativo o NaN, si es asi entonces le doy el valor de 0 y si no los guardo pero convertidos a Number()
+                stockDeposito = (Number(stockDeposito) < 0 || isNaN(Number(stockDeposito))) ? 0 : Number(stockDeposito)
+                stock = (Number(stock) < 0 || isNaN(Number(stock))) ? 0 : Number(stock)
+                priceBuy = (Number(priceBuy) < 0 || isNaN(Number(priceBuy))) ? 0 : Number(priceBuy)
+                price = (Number(price) < 0 || isNaN(Number(price))) ? 0 : Number(price)
+
+                if (name && (stockDeposito !== null) && (priceBuy !== null) && (price !== null) && (categoryNames !== null)) { // verificamos
+                    let objeto = {
+                        name,
+                        imagen,
+                        stock,
+                        stockDeposito,
+                        price,
+                        priceBuy,
+                        categoryNames,
+                        imagen,
+                        avaible
+                    }
+                    // revisamos si existe
+                    let existencia = await Product.findAll({ where: { name: objeto.name.toLowerCase() } })
+                    if (!existencia.length) {
+                        let respuesta = await Product.create(objeto) // creamos el producto
+                        return respuesta
+                    } else {
+                        throw new Error('That product already exist')
+                    }
+                } else {
+                    console.log('falla en: ', name)
+                    throw new Error('The info provided is not enough in one product');
+                }
+            }))
+            // enviamos la respuesta
+            return res.json(respuesta)
+        } else {
+            throw new Error('The info provided is not enough in the two main arrays');
+        }
+    }
+    catch (error) {
+        return res.status(500).json({ message: error.message })
+    }
+})
+
+
+
 // rutas put
 
 // creo una ruta put que funcione igual a la ya existente pero en lugar de recibir una id recibira un array de id's y aplicara las modificaciones a cada uno de los productos con esas id, ademas las propiedades que deben ser modificadas vendran en un array llamado cambios en el cual habran objetos con los datos para cada producto

@@ -115,10 +115,25 @@ router.post('/miNegocio', async (req, res) => {
         if (productos && productosStock) {
             let respuesta = await Promise.all(productos.map(async el => {
                 el = el.split(',')
+                // reviso si la length del array es igual a 10, si no lo es entonces inserto un elemento vacio en la posicion 1, por ejemplo si el array es asi ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'] entonces lo convierto en ['a', '', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'] para que la posicion 1 sea la unidad y la posicion 2 sea el nombre
+                if (el.length !== 10) el.splice(1, 0, '')
                 let name = el[2]
                 let stockDeposito = el[3]
+
+                // reviso productosStock uno a uno y reemplazo el valor de cada uno por si mismo pero aplicandole .split(',') ademas reviso si longitud, si es menor a 10 entonces agrego elementos vacios al inicio hasta que sea 10
+                productosStock = productosStock.map(el => {
+                    el = el.split(',')
+                    if (el.length < 10) {
+                        let cantidad = 10 - el.length
+                        for (let i = 0; i < cantidad; i++) {
+                            el.unshift('')
+                        }
+                    }
+                    return el
+                })
+
                 // reviso si en productosStock existe un producto con el mismo nombre al revisar el array pero aplicando .split(',') a cada string que vino dentro del array antes, entonces si se consigue coincidencia la variable stock le doy el valor de array[3] de ese producto, si no existe la coincidencia entonces stock sera igual a 0
-                let stock = productosStock.find(el => el.split(',')[2] === name) ? productosStock.find(el => el.split(',')[2] === name).split(',')[3] : 0
+                let stock = productosStock.find(el => el[2] === name) ? productosStock.find(el => el[2] === name)[3] : 0
 
                 let priceBuy = el[4]
                 let price = el[5]

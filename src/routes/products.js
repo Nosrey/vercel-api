@@ -114,21 +114,29 @@ router.post('/miNegocio', async (req, res) => {
         let { productos, productosStock } = req.body
         if (productos && productosStock) {
             let respuesta = await Promise.all(productos.map(async el => {
+                el = el.split(',')
                 let name = el[2]
                 let stockDeposito = el[3]
-                // reviso si en productosStock existe un producto con el mismo nombre y si es asi entonces a la variable stock le doy el valor de array[3] de ese producto, si no existe la coincidencia entonces stock sera igual a 0
-                let stock = productosStock.find(el => el[2] === name) ? productosStock.find(el => el[2] === name)[3] : 0
+                // reviso si en productosStock existe un producto con el mismo nombre al revisar el array pero aplicando .split(',') a cada string que vino dentro del array antes, entonces si se consigue coincidencia la variable stock le doy el valor de array[3] de ese producto, si no existe la coincidencia entonces stock sera igual a 0
+                let stock = productosStock.find(el => el.split(',')[2] === name) ? productosStock.find(el => el.split(',')[2] === name).split(',')[3] : 0
+
                 let priceBuy = el[4]
                 let price = el[5]
                 let categoryNames = el[9]
                 let imagen = "https://media.istockphoto.com/id/1320642367/vector/image-unavailable-icon.jpg?s=170667a&w=0&k=20&c=f3NHgpLXNEkXvbdF1CDiK4aChLtcfTrU3lnicaKsUbk="
                 avaible = true;
 
+                if (!categoryNames) categoryNames = "Sin categoría"
+
                 // reviso si stockDeposito, stock, priceBuy o price llevado a Number() es negativo o NaN, si es asi entonces le doy el valor de 0 y si no los guardo pero convertidos a Number()
                 stockDeposito = (Number(stockDeposito) < 0 || isNaN(Number(stockDeposito))) ? 0 : Number(stockDeposito)
                 stock = (Number(stock) < 0 || isNaN(Number(stock))) ? 0 : Number(stock)
                 priceBuy = (Number(priceBuy) < 0 || isNaN(Number(priceBuy))) ? 0 : Number(priceBuy)
                 price = (Number(price) < 0 || isNaN(Number(price))) ? 0 : Number(price)
+
+                // reviso si stock o stockDeposito son numeros float, de ser asi los redondeo al mas alto y los convierto en integer
+                stockDeposito = (stockDeposito % 1 !== 0) ? Math.ceil(stockDeposito) : stockDeposito
+                stock = (stock % 1 !== 0) ? Math.ceil(stock) : stock
 
                 if (name && (stockDeposito !== null) && (priceBuy !== null) && (price !== null) && (categoryNames !== null)) { // verificamos
                     let objeto = {

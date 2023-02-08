@@ -120,20 +120,8 @@ router.post('/miNegocio', async (req, res) => {
                 let name = el[2]
                 let stockDeposito = el[3]
 
-                // reviso productosStock uno a uno y reemplazo el valor de cada uno por si mismo pero aplicandole .split(',') ademas reviso si longitud, si es menor a 10 entonces agrego elementos vacios al inicio hasta que sea 10
-                productosStock = productosStock.map(el => {
-                    el = el.split(',')
-                    if (el.length < 10) {
-                        let cantidad = 10 - el.length
-                        for (let i = 0; i < cantidad; i++) {
-                            el.unshift('')
-                        }
-                    }
-                    return el
-                })
-
                 // reviso si en productosStock existe un producto con el mismo nombre al revisar el array pero aplicando .split(',') a cada string que vino dentro del array antes, entonces si se consigue coincidencia la variable stock le doy el valor de array[3] de ese producto, si no existe la coincidencia entonces stock sera igual a 0
-                let stock = productosStock.find(el => el[2] === name) ? productosStock.find(el => el[2] === name)[3] : 0
+                let stock = productosStock.find(el => el.split(',')[2] === name) ? productosStock.find(el => el.split(',')[2] === name).split(',')[3] : 0
 
                 let priceBuy = el[4]
                 let price = el[5]

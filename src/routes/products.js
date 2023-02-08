@@ -116,7 +116,7 @@ router.post('/miNegocio', async (req, res) => {
             let respuesta = await Promise.all(productos.map(async el => {
                 el = el.split(',')
                 // reviso si la length del array es igual a 10, si no lo es entonces inserto un elemento vacio en la posicion 1, por ejemplo si el array es asi ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'] entonces lo convierto en ['a', '', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'] para que la posicion 1 sea la unidad y la posicion 2 sea el nombre
-                if (el.length !== 10) el.splice(1, 0, '')
+                if (el.length < 10) el.splice(1, 0, '')
                 let name = el[2]
                 let stockDeposito = el[3]
 

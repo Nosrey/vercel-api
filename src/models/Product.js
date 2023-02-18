@@ -45,6 +45,11 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    // agrego group donde pondre un string que representa a que grupo pertecene el producto
+    group: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },    
   });
 };
 

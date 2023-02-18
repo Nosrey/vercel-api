@@ -31,7 +31,7 @@ router.get('/:id', async (req, res) => {
 // rutas post
 router.post('/', async (req, res) => {
     try {
-        let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames } = req.body  // obtenemos los valores
+        let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames, group } = req.body  // obtenemos los valores
         if (name && (stock !== null) && (stockDeposito !== null) && price && priceBuy && (avaible !== null)) { // verificamos
             let objeto = {
                 name,
@@ -42,7 +42,8 @@ router.post('/', async (req, res) => {
                 avaible,
                 priceBuy,
                 // agrego categoryNames si esta unicamente
-                categoryNames: categoryNames ? categoryNames : ''
+                categoryNames: categoryNames ? categoryNames : '',
+                group: group ? group : ''
             }
             // establecemos la imagen
             if (!objeto.imagen.length) objeto.imagen = "https://media.istockphoto.com/id/1320642367/vector/image-unavailable-icon.jpg?s=170667a&w=0&k=20&c=f3NHgpLXNEkXvbdF1CDiK4aChLtcfTrU3lnicaKsUbk="
@@ -71,7 +72,7 @@ router.post('/list', async (req, res) => {
         let { productos } = req.body
         if (productos) {
             let respuesta = await Promise.all(productos.map(async el => {
-                let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames } = el  // obtenemos los valores
+                let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames, group } = el  // obtenemos los valores
                 if (name && (stock !== null) && (stockDeposito !== null) && price && priceBuy && (avaible !== null) && categoryNames) { // verificamos
                     let objeto = {
                         name,
@@ -81,7 +82,8 @@ router.post('/list', async (req, res) => {
                         price,
                         avaible,
                         priceBuy,
-                        categoryNames
+                        categoryNames,
+                        group: group ? group : ''
                     }
                     // establecemos la imagen
                     if (!objeto.imagen.length) objeto.imagen = "https://media.istockphoto.com/id/1320642367/vector/image-unavailable-icon.jpg?s=170667a&w=0&k=20&c=f3NHgpLXNEkXvbdF1CDiK4aChLtcfTrU3lnicaKsUbk="
@@ -150,6 +152,7 @@ router.post('/miNegocio', async (req, res) => {
                         price,
                         priceBuy,
                         categoryNames,
+                        group: '',
                         imagen,
                         avaible
                     }
@@ -202,6 +205,7 @@ router.put('/array', async (req, res) => {
                     productoActual.priceBuy = cambio.priceBuy
                     productoActual.avaible = cambio.avaible
                     productoActual.categoryNames = cambio.categoryNames
+                    productoActual.group = cambio.group
                     // reemplazo el producto con la id elegida con lo que ahora tengo en productoActual re escribiendo el array
                     producto = producto.map(el => el.id === Number(id) ? productoActual : el)
                 }
@@ -222,7 +226,7 @@ router.put('/array', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames } = req.body
+        let { name, imagen, stock, stockDeposito, price, priceBuy, avaible, categoryNames, group } = req.body
         let producto = await Product.findByPk(id)
         if (name) producto.name = name
         if (imagen) producto.imagen = imagen
@@ -232,6 +236,7 @@ router.put('/:id', async (req, res) => {
         if (priceBuy) producto.priceBuy = priceBuy
         if (avaible) producto.avaible = avaible
         if (categoryNames) producto.categoryNames = categoryNames
+        if (group) producto.group = group
 
         await producto.save();
         res.json(producto);

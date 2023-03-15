@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
     }
 })
 
-// creo una ruta /list donde hare post igual que arriba pero de varios productos
+// creo una ruta /list donde hare post igual que arriba pero de varios productos v
 router.post('/list', async (req, res) => {
     try {
         let { productos } = req.body
